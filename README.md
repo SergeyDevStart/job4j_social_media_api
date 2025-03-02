@@ -1,6 +1,6 @@
 # job4j_social_media_api
 
-![CI GitHubAction](https://github.com/SergeyDevStart/job4j_cosial_media_api/actions/workflows/maven.yml/badge.svg)
+![CI GitHubAction](https://github.com/SergeyDevStart/job4j_social_media_api/actions/workflows/maven.yml/badge.svg)
 
 ## Описание проекта
 

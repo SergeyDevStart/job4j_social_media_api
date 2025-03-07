@@ -1,0 +1,6 @@
+CREATE TABLE feed_events (
+    id BIGSERIAL PRIMARY KEY,
+    created TIMESTAMP DEFAULT NOW(),
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+    post_id BIGINT REFERENCES posts(id) ON DELETE CASCADE
+);

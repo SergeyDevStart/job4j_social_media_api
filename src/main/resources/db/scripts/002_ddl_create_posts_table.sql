@@ -1,0 +1,7 @@
+CREATE TABLE posts (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    content TEXT NOT NULL,
+    created TIMESTAMP DEFAULT NOW(),
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE
+);

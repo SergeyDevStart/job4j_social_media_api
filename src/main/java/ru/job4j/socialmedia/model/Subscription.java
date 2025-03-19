@@ -18,11 +18,11 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "subscriber_id")
     private User subscriber;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "subscribed_to_id")
     private User subscribedTo;
 }

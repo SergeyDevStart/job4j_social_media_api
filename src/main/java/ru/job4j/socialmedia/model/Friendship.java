@@ -18,11 +18,11 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "user_send_id")
     private User sendUser;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "user_accept_id")
     private User acceptUser;
 }

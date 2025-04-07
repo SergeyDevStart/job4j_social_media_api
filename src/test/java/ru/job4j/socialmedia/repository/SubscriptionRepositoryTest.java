@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.job4j.socialmedia.model.Friendship;
 import ru.job4j.socialmedia.model.Subscription;
 import ru.job4j.socialmedia.model.User;
 
@@ -79,5 +80,18 @@ class SubscriptionRepositoryTest {
 
         var foundSubscription = subscriptionRepository.findById(subscription.getId());
         assertThat(foundSubscription).isEmpty();
+    }
+
+    @Test
+    void whenFindByUsersThenSuccessfully() {
+        var subscription = new Subscription();
+        subscription.setSubscriber(subscriber);
+        subscription.setSubscribedTo(subscribedTo);
+        subscriptionRepository.save(subscription);
+
+        var expectedSubscription = subscriptionRepository.findBySubscriberIdAndSubscribedToId(subscriber.getId(), subscribedTo.getId());
+
+        assertThat(expectedSubscription).isPresent();
+        assertThat(expectedSubscription.get()).isEqualTo(subscription);
     }
 }

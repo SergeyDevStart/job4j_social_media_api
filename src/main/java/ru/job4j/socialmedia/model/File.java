@@ -20,6 +20,7 @@ public class File {
 
     private String name;
 
+    @EqualsAndHashCode.Include
     @Column(unique = true, nullable = false)
     private String path;
 

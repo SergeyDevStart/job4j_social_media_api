@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="ru.job4j.socialmedia" level="INFO"/>
+
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO"/>
+
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.boot" level="WARN"/>
+    <logger name="liquibase" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.springframework.boot.autoconfigure.security" level="ERROR"/>
+    <logger name="org.springframework.boot.autoconfigure.thymeleaf" level="ERROR"/>
+
+
+
+</configuration>

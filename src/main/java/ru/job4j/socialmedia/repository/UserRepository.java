@@ -1,14 +1,14 @@
 package ru.job4j.socialmedia.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 import ru.job4j.socialmedia.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends ListCrudRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
             FROM User WHERE email = :email AND password = :password
             """)

@@ -22,6 +22,35 @@ public class JpaPostService implements PostService {
     private final FileService fileService;
 
     @Override
+    public Post save(Post post) {
+        return postRepository.save(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Post> findById(Long id) {
+        return postRepository.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public boolean update(Post post) {
+        return postRepository.updateTitleAndContent(post.getTitle(), post.getContent(), post.getId()) > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteById(Long id) {
+        return postRepository.deletePostById(id) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
+
+    @Override
     @Transactional
     public Optional<Post> create(Post post, MultipartFile[] multipartFiles) {
         Post savedPost = postRepository.save(post);

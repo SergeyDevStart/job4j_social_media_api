@@ -65,7 +65,7 @@ class FriendshipRepositoryTest {
         friendship.setAcceptUser(acceptUser);
         friendshipRepository.save(friendship);
 
-        var expectedFriendship = friendshipRepository.findBySendUserIdAndAcceptUserId(sendUser.getId(), acceptUser.getId());
+        var expectedFriendship = friendshipRepository.findByUserIds(sendUser.getId(), acceptUser.getId());
 
         assertThat(expectedFriendship).isPresent();
         assertThat(expectedFriendship.get()).isEqualTo(friendship);

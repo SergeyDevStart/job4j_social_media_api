@@ -1,6 +1,7 @@
 package ru.job4j.socialmedia.service.friendship;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,48 +52,40 @@ class JpaFriendshipServiceTest {
     void whenSendRequestThenFindById() {
         friendshipService.sendRequest(sendUser, acceptUser);
 
-        var friendshipOptional = friendshipRepository.findBySendUserIdAndAcceptUserId(sendUser.getId(), acceptUser.getId());
         var subscriptionOptional = subscriptionRepository.findBySubscriberIdAndSubscribedToId(sendUser.getId(), acceptUser.getId());
 
-        assertThat(friendshipOptional).isPresent();
         assertThat(subscriptionOptional).isPresent();
 
-        assertThat(friendshipOptional.get().getSendUser()).isEqualTo(sendUser);
-        assertThat(friendshipOptional.get().getAcceptUser()).isEqualTo(acceptUser);
         assertThat(subscriptionOptional.get().getSubscriber()).isEqualTo(sendUser);
         assertThat(subscriptionOptional.get().getSubscribedTo()).isEqualTo(acceptUser);
     }
 
     @Test
-    void whenAcceptRequestThenStatusBecomesTrue() {
+    void whenAcceptRequestThenCreateFriendship() {
         friendshipService.sendRequest(sendUser, acceptUser);
         friendshipService.acceptRequest(sendUser, acceptUser);
 
-        var friendshipOptional = friendshipRepository.findBySendUserIdAndAcceptUserId(sendUser.getId(), acceptUser.getId());
+        var friendshipOptional = friendshipRepository.findByUserIds(sendUser.getId(), acceptUser.getId());
         var subscriptionOptionalOne = subscriptionRepository.findBySubscriberIdAndSubscribedToId(sendUser.getId(), acceptUser.getId());
         var subscriptionOptionalTwo = subscriptionRepository.findBySubscriberIdAndSubscribedToId(acceptUser.getId(), sendUser.getId());
 
         assertThat(friendshipOptional).isPresent();
         assertThat(subscriptionOptionalOne).isPresent();
         assertThat(subscriptionOptionalTwo).isPresent();
-
-        assertThat(friendshipOptional.get().isStatus()).isTrue();
     }
 
     @Test
-    void whenRemoveFromFriendsThenStatusBecomesFalse() {
+    void whenRemoveFromFriendsThenFriendshipNotFound() {
         friendshipService.sendRequest(sendUser, acceptUser);
         friendshipService.acceptRequest(sendUser, acceptUser);
         friendshipService.removeFromFriends(acceptUser, sendUser);
 
-        var friendshipOptional = friendshipRepository.findBySendUserIdAndAcceptUserId(sendUser.getId(), acceptUser.getId());
+        var friendshipOptional = friendshipRepository.findByUserIds(sendUser.getId(), acceptUser.getId());
         var subscriptionOptionalOne = subscriptionRepository.findBySubscriberIdAndSubscribedToId(sendUser.getId(), acceptUser.getId());
         var subscriptionOptionalTwo = subscriptionRepository.findBySubscriberIdAndSubscribedToId(acceptUser.getId(), sendUser.getId());
 
-        assertThat(friendshipOptional).isPresent();
+        assertThat(friendshipOptional).isEmpty();
         assertThat(subscriptionOptionalOne).isPresent();
         assertThat(subscriptionOptionalTwo).isEmpty();
-
-        assertThat(friendshipOptional.get().isStatus()).isFalse();
     }
 }

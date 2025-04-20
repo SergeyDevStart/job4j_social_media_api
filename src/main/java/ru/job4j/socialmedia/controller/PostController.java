@@ -17,14 +17,14 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/{postId}")
-    ResponseEntity<Post> get(@PathVariable("postId") Long postId) {
+    public ResponseEntity<Post> get(@PathVariable("postId") Long postId) {
         return postService.findById(postId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    ResponseEntity<Post> save(@RequestBody Post post) {
+    public ResponseEntity<Post> save(@RequestBody Post post) {
         postService.save(post);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -37,7 +37,7 @@ public class PostController {
     }
 
     @PutMapping
-    ResponseEntity<Void> update(@RequestBody Post post) {
+    public ResponseEntity<Void> update(@RequestBody Post post) {
         if (postService.update(post)) {
             return ResponseEntity.ok().build();
         }
@@ -45,7 +45,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    ResponseEntity<Void> deleteById(@PathVariable("postId") Long postId) {
+    public ResponseEntity<Void> deleteById(@PathVariable("postId") Long postId) {
         if (postService.deleteById(postId)) {
             return ResponseEntity.noContent().build();
         }

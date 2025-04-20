@@ -13,5 +13,6 @@
     <include file="db/scripts/006_ddl_create_messages_table.sql"/>
     <include file="db/scripts/007_ddl_create_feed_events_table.sql"/>
     <include file="db/scripts/008_ddl_alter_friendships_table.sql"/>
+    <include file="db/scripts/009_ddl_alter_friendships_table.sql"/>
 
 </databaseChangeLog>

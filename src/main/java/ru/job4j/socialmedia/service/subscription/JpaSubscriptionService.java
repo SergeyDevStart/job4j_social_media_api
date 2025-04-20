@@ -1,5 +1,6 @@
 package ru.job4j.socialmedia.service.subscription;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,13 +39,9 @@ public class JpaSubscriptionService implements SubscriptionService {
     @Override
     @Transactional
     public void unsubscribe(User subscriber, User subscribedTo) {
-        subscriptionRepository.findBySubscriberIdAndSubscribedToId(subscriber.getId(), subscribedTo.getId())
-                .ifPresentOrElse(
-                        subscription -> {
-                            delete(subscription);
-                            log.info("The unsubscribe operation was successful.");
-                        },
-                        () -> log.warn("Entity subscription not found.")
-                );
+        var subscription = subscriptionRepository.findBySubscriberIdAndSubscribedToId(
+                subscriber.getId(), subscribedTo.getId()
+        ).orElseThrow(() -> new EntityNotFoundException("Entity subscription not found."));
+        delete(subscription);
     }
 }

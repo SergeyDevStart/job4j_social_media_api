@@ -25,7 +25,4 @@ public class Friendship {
     @ManyToOne
     @JoinColumn(name = "user_accept_id")
     private User acceptUser;
-
-    @Column(name = "status")
-    private boolean status;
 }

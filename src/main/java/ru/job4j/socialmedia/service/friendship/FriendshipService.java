@@ -12,7 +12,7 @@ public interface FriendshipService {
 
     void sendRequest(User sendUser, User acceptUser);
 
-    void updateStatus(User sendUser, User acceptUser);
+    Optional<Friendship> findFriendshipByUserIds(User sendUser, User acceptUser);
 
     boolean delete(Friendship friendship);
 

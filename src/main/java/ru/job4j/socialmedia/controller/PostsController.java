@@ -21,7 +21,7 @@ public class PostsController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<Post> getAll() {
+    public List<Post> getAll() {
         return postService.findAll();
     }
 }

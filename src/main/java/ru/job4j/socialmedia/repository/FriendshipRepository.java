@@ -16,5 +16,10 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
             """)
     int deleteFriendshipById(@Param("id") Long id);
 
-    Optional<Friendship> findBySendUserIdAndAcceptUserId(Long sendUserId, Long acceptUserId);
+    @Query("""
+            SELECT f FROM Friendship f
+            WHERE f.sendUser.id = :minId AND
+            f.acceptUser.id = :maxId
+            """)
+    Optional<Friendship> findByUserIds(@Param("minId") Long minId, @Param("maxId") Long maxId);
 }

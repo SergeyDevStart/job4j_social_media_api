@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
+    List<Post> findByUserIdIn(List<Long> ids);
+
     List<Post> findByUserId(Long id);
 
     List<Post> findByCreatedGreaterThanEqualAndCreatedLessThanEqual(LocalDateTime startAt, LocalDateTime endAt);

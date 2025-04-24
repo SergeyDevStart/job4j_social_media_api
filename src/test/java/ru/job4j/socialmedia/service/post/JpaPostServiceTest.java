@@ -9,10 +9,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.job4j.socialmedia.dto.UserDto;
 import ru.job4j.socialmedia.model.File;
 import ru.job4j.socialmedia.model.Post;
+import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.FileRepository;
 import ru.job4j.socialmedia.repository.PostRepository;
+import ru.job4j.socialmedia.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +36,8 @@ class JpaPostServiceTest {
     private PostRepository postRepository;
     @Autowired
     private FileRepository fileRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Value("${file.directory}")
     private String storageDirectory;
 
@@ -109,5 +114,35 @@ class JpaPostServiceTest {
         assertThat(savedFiles).hasSize(1);
         assertThat(savedFiles).extracting(File::getPost).contains(updatedPost.get());
         assertThat(savedFiles).extracting(File::getName).contains("update.txt");
+    }
+
+    @Test
+    void whenGetUsersWithPostsByUserIdsThenGetUserDtoList() {
+        User userOne = new User();
+        userOne.setName("nameOne");
+        userOne.setEmail("emailOne");
+        userOne.setPassword("pass");
+        User userTwo = new User();
+        userTwo.setName("userTwo");
+        userTwo.setEmail("emailTwo");
+        userTwo.setPassword("pass");
+        userRepository.save(userOne);
+        userRepository.save(userTwo);
+        Post postOne = new Post();
+        postOne.setTitle("T1");
+        postOne.setContent("C1");
+        postOne.setUser(userOne);
+        Post postTwo = new Post();
+        postTwo.setTitle("T2");
+        postTwo.setContent("C2");
+        postTwo.setUser(userTwo);
+        postRepository.save(postOne);
+        postRepository.save(postTwo);
+
+        List<Long> userIds = List.of(userOne.getId(), userTwo.getId());
+
+        List<UserDto> result = postService.getUsersWithPostsByUserIds(userIds);
+
+        assertThat(result).hasSize(2);
     }
 }

@@ -29,7 +29,7 @@ class FeedEventRepositoryTest {
     void setUp() {
         user = new User();
         user.setName("name");
-        user.setEmail("@mail.ru");
+        user.setEmail("email@mail.ru");
         user.setPassword("password");
         userRepository.save(user);
         post = new Post();

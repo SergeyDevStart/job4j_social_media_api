@@ -1,6 +1,7 @@
 package ru.job4j.socialmedia.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Заголовок не может быть пустым")
     private String title;
 
     @Column(columnDefinition = "TEXT")

@@ -1,5 +1,11 @@
 package ru.job4j.socialmedia.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -12,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.user.UserService;
 
+@Tag(name = "UserController", description = "UserController management APIs")
 @RestController
 @RequestMapping("/api/user")
 @AllArgsConstructor
@@ -20,6 +27,12 @@ import ru.job4j.socialmedia.service.user.UserService;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "Получить пользователя по ID", description = "Возвращает пользователя по ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь найден",
+            content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
+    })
     @GetMapping("/{userId}")
     public ResponseEntity<User> get(@PathVariable("userId") @Min(1) Long userId) {
         return userService.findById(userId)
@@ -27,6 +40,12 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Создание пользователя", description = "Создаёт нового пользователя и возвращает его URL в заголовке Location")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации")
+    })
     @PostMapping
     public ResponseEntity<User> save(@Valid @RequestBody User user) {
         userService.save(user);
@@ -40,6 +59,12 @@ public class UserController {
                 .body(user);
     }
 
+    @Operation(summary = "Обновить существующего пользователя", description = "Обновляет данные пользователя по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь успешно обновлён"),
+            @ApiResponse(responseCode = "404", description = "Пользователь с указанным ID не найден"),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации")
+    })
     @PutMapping
     public ResponseEntity<Void> update(@Valid @RequestBody User user) {
         if (userService.update(user)) {
@@ -48,6 +73,11 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Удалить пользователя по ID", description = "Удаляет пользователя по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Пользователь успешно удалён"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
+    })
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable("userId") @Min(1) Long userId) {
         if (userService.deleteById(userId)) {

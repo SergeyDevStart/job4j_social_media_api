@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.job4j.socialmedia.dto.UserDto;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.user.UserService;
 
@@ -43,12 +44,12 @@ public class UserController {
     @Operation(summary = "Создание пользователя", description = "Создаёт нового пользователя и возвращает его URL в заголовке Location")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Пользователь успешно создан",
-                    content = @Content(schema = @Schema(implementation = User.class))),
+                    content = @Content(schema = @Schema(implementation = UserDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
     @PostMapping
-    public ResponseEntity<User> save(@Valid @RequestBody User user) {
-        userService.save(user);
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto userDto) {
+        User user = userService.save(userDto);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -56,7 +57,7 @@ public class UserController {
                 .toUri();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(uri)
-                .body(user);
+                .body(userDto);
     }
 
     @Operation(summary = "Обновить существующего пользователя", description = "Обновляет данные пользователя по его ID")
@@ -66,8 +67,8 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
     @PutMapping
-    public ResponseEntity<Void> update(@Valid @RequestBody User user) {
-        if (userService.update(user)) {
+    public ResponseEntity<Void> update(@Valid @RequestBody UserDto userDto) {
+        if (userService.update(userDto)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

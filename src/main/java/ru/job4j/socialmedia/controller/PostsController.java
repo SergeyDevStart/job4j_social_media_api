@@ -13,9 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.job4j.socialmedia.dto.UserDto;
+import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.Post;
-import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.post.PostService;
 
 import java.util.List;
@@ -42,11 +41,11 @@ public class PostsController {
     @Operation(summary = "Получить пользователей с их постами", description = "Загружает список пользователей с их постами по переданному списку ID пользователей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно получен список пользователей с постами",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserWithPostsDto.class)))),
             @ApiResponse(responseCode = "404", description = "Пользователи не найдены")
     })
     @GetMapping("/by-users")
-    public ResponseEntity<List<UserDto>> getUsersWithPostsByUserIds(@RequestParam(name = "ids")
+    public ResponseEntity<List<UserWithPostsDto>> getUsersWithPostsByUserIds(@RequestParam(name = "ids")
                                                                         @Parameter(
                                                                                 description = "Список ID пользователей",
                                                                                 example = "1,2,3"

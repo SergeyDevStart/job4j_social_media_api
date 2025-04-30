@@ -14,9 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.job4j.socialmedia.dto.PostDto;
 import ru.job4j.socialmedia.model.Post;
-import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.post.PostService;
 
 @Tag(name = "PostController", description = "PostController management APIs")
@@ -44,12 +45,12 @@ public class PostController {
     @Operation(summary = "Создание поста", description = "Создаёт новый пост и возвращает его URL в заголовке Location")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Пост успешно создан",
-                    content = @Content(schema = @Schema(implementation = Post.class))),
+                    content = @Content(schema = @Schema(implementation = PostDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
     @PostMapping
-    public ResponseEntity<Post> save(@Valid @RequestBody Post post) {
-        postService.save(post);
+    public ResponseEntity<PostDto> save(@Valid @RequestBody PostDto postDto, MultipartFile[] multipartFiles) {
+        Post post = postService.create(postDto, multipartFiles);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -57,7 +58,7 @@ public class PostController {
                 .toUri();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(uri)
-                .body(post);
+                .body(postDto);
     }
 
     @Operation(summary = "Обновить существующий пост", description = "Обновляет данные поста по его ID")
@@ -67,8 +68,8 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
     @PutMapping
-    public ResponseEntity<Void> update(@Valid @RequestBody Post post) {
-        if (postService.update(post)) {
+    public ResponseEntity<Void> update(@Valid @RequestBody PostDto postDto, MultipartFile[] multipartFiles) {
+        if (postService.update(postDto, multipartFiles)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

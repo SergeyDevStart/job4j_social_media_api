@@ -1,9 +1,12 @@
 package ru.job4j.socialmedia.service.user;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.job4j.socialmedia.dto.UserDto;
+import ru.job4j.socialmedia.mappers.UserMapper;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.UserRepository;
 
@@ -15,9 +18,11 @@ import java.util.Optional;
 @Slf4j
 public class JpaUserService implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper mapper;
 
     @Override
-    public User save(User user) {
+    public User save(UserDto userDto) {
+        User user = mapper.toUserFromUserDto(userDto);
         return userRepository.save(user);
     }
 
@@ -29,13 +34,15 @@ public class JpaUserService implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getByEmailAndPassword(String email, String password) {
-        return userRepository.getByEmailAndPassword(email, password);
+    public User getByEmailAndPassword(String email, String password) {
+        return userRepository.getByEmailAndPassword(email, password)
+                .orElseThrow(() -> new EntityNotFoundException("Entity user not found"));
     }
 
     @Transactional
     @Override
-    public boolean update(User user) {
+    public boolean update(UserDto userDto) {
+        User user = mapper.toUserFromUserDto(userDto);
         return userRepository.update(user) > 0;
     }
 

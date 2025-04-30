@@ -1,7 +1,9 @@
 package ru.job4j.socialmedia.service.post;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.job4j.socialmedia.dto.UserDto;
+import ru.job4j.socialmedia.dto.PostDto;
+import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.Post;
 
 import java.util.List;
@@ -18,11 +20,11 @@ public interface PostService {
 
     List<Post> findAll();
 
-    List<UserDto> getUsersWithPostsByUserIds(List<Long> ids);
+    List<UserWithPostsDto> getUsersWithPostsByUserIds(List<Long> ids);
 
-    Optional<Post> create(Post post, MultipartFile[] files);
+    Post create(PostDto postDto, MultipartFile[] files);
 
     boolean delete(Post post);
 
-    boolean update(Post post, MultipartFile[] files);
+    boolean update(PostDto postDto, MultipartFile[] files);
 }

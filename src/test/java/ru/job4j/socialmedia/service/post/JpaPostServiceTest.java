@@ -9,7 +9,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.job4j.socialmedia.dto.UserDto;
+import ru.job4j.socialmedia.dto.PostDto;
+import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.File;
 import ru.job4j.socialmedia.model.Post;
 import ru.job4j.socialmedia.model.User;
@@ -53,34 +54,33 @@ class JpaPostServiceTest {
 
     @Test
     void whenCreatePostThenReturnOptionalPost() {
-        Post post = new Post();
-        post.setTitle("Title");
-        post.setContent("Content");
+        PostDto postDto = new PostDto();
+        postDto.setTitle("Title");
+        postDto.setContent("Content");
         MockMultipartFile file1 = new MockMultipartFile("testFile1", "testFile1.txt", "text/plain",  "Test content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("testFile2", "testFile2.txt", "text/plain",  "Test content".getBytes());
 
-        Optional<Post> optionalPost = postService.create(post, new MultipartFile[]{file1, file2});
+        Post post = postService.create(postDto, new MultipartFile[]{file1, file2});
 
-        assertThat(optionalPost).isPresent();
-        Post savedPost = optionalPost.get();
-        assertThat(savedPost.getId()).isNotNull();
-        assertThat(savedPost.getTitle()).isEqualTo("Title");
-        assertThat(savedPost.getContent()).isEqualTo("Content");
+        assertThat(post.getId()).isNotNull();
+        assertThat(post.getTitle()).isEqualTo("Title");
+        assertThat(post.getContent()).isEqualTo("Content");
 
-        List<File> savedFiles = fileRepository.findByPostId(savedPost.getId());
+        List<File> savedFiles = fileRepository.findByPostId(post.getId());
         assertThat(savedFiles).hasSize(2);
-        assertThat(savedFiles).extracting(File::getPost).contains(savedPost);
+        assertThat(savedFiles).extracting(File::getPost).contains(post);
         assertThat(savedFiles).extracting(File::getName).containsExactlyInAnyOrder("testFile1.txt", "testFile2.txt");
     }
 
     @Test
     void whenDeletePostThenNotFound() {
-        Post post = new Post();
-        post.setTitle("Title");
-        post.setContent("Content");
+        PostDto postDto = new PostDto();
+        postDto.setTitle("Title");
+        postDto.setContent("Content");
         MockMultipartFile file1 = new MockMultipartFile("testFile1", "testFile1.txt", "text/plain",  "Test content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("testFile2", "testFile2.txt", "text/plain",  "Test content".getBytes());
-        postService.create(post, new MultipartFile[]{file1, file2});
+
+        Post post = postService.create(postDto, new MultipartFile[]{file1, file2});
 
         boolean isDeleted = postService.delete(post);
 
@@ -91,18 +91,21 @@ class JpaPostServiceTest {
 
     @Test
     void whenUpdatePostWithFile() {
-        Post post = new Post();
-        post.setTitle("Title");
-        post.setContent("Content");
+        PostDto postDto = new PostDto();
+        postDto.setTitle("Title");
+        postDto.setContent("Content");
         MockMultipartFile file1 = new MockMultipartFile("testFile1", "testFile1.txt", "text/plain",  "Test content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("testFile2", "testFile2.txt", "text/plain",  "Test content".getBytes());
-        postService.create(post, new MultipartFile[]{file1, file2});
 
-        post.setTitle("Updated Title");
-        post.setContent("Updated Content");
+        Post post = postService.create(postDto, new MultipartFile[]{file1, file2});
+
+        PostDto postDtoForUpdate = new PostDto();
+        postDtoForUpdate.setId(post.getId());
+        postDtoForUpdate.setTitle("Updated Title");
+        postDtoForUpdate.setContent("Updated Content");
         MockMultipartFile updatedFile = new MockMultipartFile("update", "update.txt", "text/plain",  "update".getBytes());
 
-        boolean isUpdated = postService.update(post, new MultipartFile[]{updatedFile});
+        boolean isUpdated = postService.update(postDtoForUpdate, new MultipartFile[]{updatedFile});
         Optional<Post> updatedPost = postRepository.findById(post.getId());
 
         assertThat(isUpdated).isTrue();
@@ -141,7 +144,7 @@ class JpaPostServiceTest {
 
         List<Long> userIds = List.of(userOne.getId(), userTwo.getId());
 
-        List<UserDto> result = postService.getUsersWithPostsByUserIds(userIds);
+        List<UserWithPostsDto> result = postService.getUsersWithPostsByUserIds(userIds);
 
         assertThat(result).hasSize(2);
     }

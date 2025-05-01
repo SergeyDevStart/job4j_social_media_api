@@ -1,8 +1,7 @@
 package ru.job4j.socialmedia.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,31 +11,39 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.job4j.socialmedia.validation.ErrorResponse;
 import ru.job4j.socialmedia.validation.ValidationErrorResponse;
 import ru.job4j.socialmedia.validation.Violation;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestControllerAdvice
 @AllArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public void catchDataIntegrityViolationException(Exception e, HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        Map<String, String> details = new HashMap<>();
-        details.put("message", e.getMessage());
-        details.put("type", String.valueOf(e.getClass()));
-        details.put("timestamp", String.valueOf(LocalDateTime.now()));
-        details.put("path", request.getRequestURI());
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setContentType("application/json; charset=utf-8");
-        response.getWriter().write(new ObjectMapper().writeValueAsString(details));
+    private ErrorResponse buildErrorResponse(Exception e, HttpServletRequest request, HttpStatus status) {
+        return new ErrorResponse(
+                status.value(),
+                e.getMessage(),
+                e.getClass().getSimpleName(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse onEntityNotFoundException(EntityNotFoundException e, HttpServletRequest request) {
         log.error(e.getLocalizedMessage());
+        return buildErrorResponse(e, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse onDataIntegrityViolationException(Exception e, HttpServletRequest request) {
+        log.error(e.getLocalizedMessage());
+        return buildErrorResponse(e, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

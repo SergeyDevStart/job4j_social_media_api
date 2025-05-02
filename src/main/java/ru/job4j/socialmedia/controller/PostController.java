@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.dto.PostDto;
 import ru.job4j.socialmedia.model.Post;
 import ru.job4j.socialmedia.service.post.PostService;
+import ru.job4j.socialmedia.validation.ErrorResponse;
 
 @Tag(name = "PostController", description = "PostController management APIs")
 @RestController
@@ -33,13 +34,13 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пост найден",
                     content = @Content(schema = @Schema(implementation = Post.class))),
-            @ApiResponse(responseCode = "404", description = "Пост не найден")
+            @ApiResponse(responseCode = "404", description = "Пост не найден",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{postId}")
     public ResponseEntity<Post> get(@PathVariable("postId") @Min(1) Long postId) {
-        return postService.findById(postId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Post post = postService.findById(postId);
+        return ResponseEntity.ok(post);
     }
 
     @Operation(summary = "Создание поста", description = "Создаёт новый пост и возвращает его URL в заголовке Location")

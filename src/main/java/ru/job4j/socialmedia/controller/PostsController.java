@@ -37,24 +37,4 @@ public class PostsController {
     public List<Post> getAll() {
         return postService.findAll();
     }
-
-    @Operation(summary = "Получить пользователей с их постами", description = "Загружает список пользователей с их постами по переданному списку ID пользователей")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно получен список пользователей с постами",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserWithPostsDto.class)))),
-            @ApiResponse(responseCode = "404", description = "Пользователи не найдены")
-    })
-    @GetMapping("/by-users")
-    public ResponseEntity<List<UserWithPostsDto>> getUsersWithPostsByUserIds(@RequestParam(name = "ids")
-                                                                        @Parameter(
-                                                                                description = "Список ID пользователей",
-                                                                                example = "1,2,3"
-                                                                        )
-                                                                        List<Long> ids) {
-        var usersWithPosts = postService.getUsersWithPostsByUserIds(ids);
-        if (!usersWithPosts.isEmpty()) {
-            return ResponseEntity.ok(usersWithPosts);
-        }
-        return ResponseEntity.notFound().build();
-    }
 }

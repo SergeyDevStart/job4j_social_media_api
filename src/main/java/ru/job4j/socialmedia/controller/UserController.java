@@ -16,8 +16,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.dto.UserDto;
+import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.user.UserService;
+import ru.job4j.socialmedia.validation.ErrorResponse;
+import ru.job4j.socialmedia.validation.ValidationErrorResponse;
 
 @Tag(name = "UserController", description = "UserController management APIs")
 @RestController
@@ -31,14 +34,31 @@ public class UserController {
     @Operation(summary = "Получить пользователя по ID", description = "Возвращает пользователя по ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь найден",
-            content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации",
+                    content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
     })
     @GetMapping("/{userId}")
     public ResponseEntity<User> get(@PathVariable("userId") @Min(1) Long userId) {
-        return userService.findById(userId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        User user = userService.findById(userId);
+        return ResponseEntity.ok(user);
+    }
+
+    @Operation(summary = "Получить пользователя с постами", description = "Возвращает пользователя и его посты по ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь найден",
+            content = @Content(schema = @Schema(implementation = UserWithPostsDto.class))),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации",
+            content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
+    })
+    @GetMapping("/{userId}/with-posts")
+    public ResponseEntity<UserWithPostsDto> getUserWithPosts(@PathVariable("userId") @Min(1) Long userId) {
+        var userWithPosts = userService.getUserWithPostsById(userId);
+        return ResponseEntity.ok(userWithPosts);
     }
 
     @Operation(summary = "Создание пользователя", description = "Создаёт нового пользователя и возвращает его URL в заголовке Location")

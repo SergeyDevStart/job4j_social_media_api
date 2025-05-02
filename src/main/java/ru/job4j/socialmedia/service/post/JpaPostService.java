@@ -1,32 +1,25 @@
 package ru.job4j.socialmedia.service.post;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.socialmedia.dto.PostDto;
-import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.mappers.PostMapper;
-import ru.job4j.socialmedia.mappers.UserMapper;
 import ru.job4j.socialmedia.model.File;
 import ru.job4j.socialmedia.model.Post;
-import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.PostRepository;
-import ru.job4j.socialmedia.repository.UserRepository;
 import ru.job4j.socialmedia.service.file.FileService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class JpaPostService implements PostService {
-    private final UserRepository userRepository;
-    private final UserMapper mapper;
     private final PostRepository postRepository;
     private final FileService fileService;
     private final PostMapper postMapper;
@@ -38,8 +31,9 @@ public class JpaPostService implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Post> findById(Long id) {
-        return postRepository.findById(id);
+    public Post findById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Entity post not found"));
     }
 
     @Override
@@ -93,20 +87,6 @@ public class JpaPostService implements PostService {
             fileService.deleteAll(filesToDelete);
         }
         return postRepository.deletePostById(post.getId()) > 0;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserWithPostsDto> getUsersWithPostsByUserIds(List<Long> ids) {
-        List<User> users = userRepository.findAllById(ids);
-        List<Post> posts = postRepository.findByUserIdIn(ids);
-        Map<Long, List<Post>> postsByUserId = posts.stream()
-                .collect(Collectors.groupingBy(post -> post.getUser().getId()));
-        return users.stream()
-                .map(user -> {
-                    List<Post> userPosts = postsByUserId.getOrDefault(user.getId(), List.of());
-                    return mapper.getUserDtoWithPosts(user, userPosts);
-                }).collect(Collectors.toList());
     }
 
     private boolean validFiles(MultipartFile[] multipartFiles) {

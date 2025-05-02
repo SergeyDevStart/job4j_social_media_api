@@ -10,10 +10,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.socialmedia.dto.PostDto;
-import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.File;
 import ru.job4j.socialmedia.model.Post;
-import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.FileRepository;
 import ru.job4j.socialmedia.repository.PostRepository;
 import ru.job4j.socialmedia.repository.UserRepository;
@@ -25,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -117,35 +115,5 @@ class JpaPostServiceTest {
         assertThat(savedFiles).hasSize(1);
         assertThat(savedFiles).extracting(File::getPost).contains(updatedPost.get());
         assertThat(savedFiles).extracting(File::getName).contains("update.txt");
-    }
-
-    @Test
-    void whenGetUsersWithPostsByUserIdsThenGetUserDtoList() {
-        User userOne = new User();
-        userOne.setName("nameOne");
-        userOne.setEmail("emailOne@mail.ru");
-        userOne.setPassword("pass");
-        User userTwo = new User();
-        userTwo.setName("userTwo");
-        userTwo.setEmail("emailTwo@mail.ru");
-        userTwo.setPassword("pass");
-        userRepository.save(userOne);
-        userRepository.save(userTwo);
-        Post postOne = new Post();
-        postOne.setTitle("T1");
-        postOne.setContent("C1");
-        postOne.setUser(userOne);
-        Post postTwo = new Post();
-        postTwo.setTitle("T2");
-        postTwo.setContent("C2");
-        postTwo.setUser(userTwo);
-        postRepository.save(postOne);
-        postRepository.save(postTwo);
-
-        List<Long> userIds = List.of(userOne.getId(), userTwo.getId());
-
-        List<UserWithPostsDto> result = postService.getUsersWithPostsByUserIds(userIds);
-
-        assertThat(result).hasSize(2);
     }
 }

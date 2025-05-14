@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -40,6 +41,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации",
                     content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or #userId == authentication.principal.id")
     @GetMapping("/{userId}")
     public ResponseEntity<User> get(@PathVariable("userId") @Min(1) Long userId) {
         User user = userService.findById(userId);
@@ -55,6 +57,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации",
             content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/{userId}/with-posts")
     public ResponseEntity<UserWithPostsDto> getUserWithPosts(@PathVariable("userId") @Min(1) Long userId) {
         var userWithPosts = userService.getUserWithPostsById(userId);
@@ -67,6 +70,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = UserDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto userDto) {
         User user = userService.save(userDto);
@@ -86,6 +90,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь с указанным ID не найден"),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or #userDto.id == authentication.principal.id")
     @PutMapping
     public ResponseEntity<Void> update(@Valid @RequestBody UserDto userDto) {
         if (userService.update(userDto)) {
@@ -99,6 +104,7 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Пользователь успешно удалён"),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable("userId") @Min(1) Long userId) {
         if (userService.deleteById(userId)) {

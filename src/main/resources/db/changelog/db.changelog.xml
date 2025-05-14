@@ -14,5 +14,9 @@
     <include file="db/scripts/007_ddl_create_feed_events_table.sql"/>
     <include file="db/scripts/008_ddl_alter_friendships_table.sql"/>
     <include file="db/scripts/009_ddl_alter_friendships_table.sql"/>
+    <include file="db/scripts/010_ddl_create_table_persons.sql"/>
+    <include file="db/scripts/011_ddl_create_table_roles.sql"/>
+    <include file="db/scripts/012_ddl_create_table_persons_roles.sql"/>
+    <include file="db/scripts/013_dml_insert_role.sql"/>
 
 </databaseChangeLog>

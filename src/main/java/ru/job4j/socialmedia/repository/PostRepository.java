@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.job4j.socialmedia.model.Post;
+import ru.job4j.socialmedia.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCreatedGreaterThanEqualAndCreatedLessThanEqual(LocalDateTime startAt, LocalDateTime endAt);
 
     Page<Post> findByOrderByCreatedDesc(Pageable pageable);
+
+    @Query("""
+            SELECT p.user.id
+            FROM Post p
+            WHERE p.id = :postId
+            """)
+    Long findUserIdByPostId(@Param("postId") Long postId);
 
     @Modifying(clearAutomatically = true)
     @Query("""

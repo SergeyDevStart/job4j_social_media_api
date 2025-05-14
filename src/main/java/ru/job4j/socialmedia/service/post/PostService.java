@@ -23,4 +23,6 @@ public interface PostService {
     boolean delete(Post post);
 
     boolean update(PostDto postDto, MultipartFile[] files);
+
+    boolean isPostOwner(Long userId, Long postId);
 }

@@ -92,4 +92,10 @@ public class JpaPostService implements PostService {
     private boolean validFiles(MultipartFile[] multipartFiles) {
         return multipartFiles != null && multipartFiles.length != 0 && multipartFiles[0].getSize() != 0;
     }
+
+    @Override
+    public boolean isPostOwner(Long userId, Long postId) {
+        Long ownerId = postRepository.findUserIdByPostId(postId);
+        return ownerId != null && ownerId.equals(userId);
+    }
 }

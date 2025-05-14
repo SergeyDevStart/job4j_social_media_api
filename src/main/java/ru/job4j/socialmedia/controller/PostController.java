@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,7 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "Пост не найден",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{postId}")
     public ResponseEntity<Post> get(@PathVariable("postId") @Min(1) Long postId) {
         Post post = postService.findById(postId);
@@ -49,6 +51,7 @@ public class PostController {
                     content = @Content(schema = @Schema(implementation = PostDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<PostDto> save(@Valid @RequestBody PostDto postDto, MultipartFile[] multipartFiles) {
         Post post = postService.create(postDto, multipartFiles);
@@ -68,6 +71,7 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "Пост с указанным ID не найден"),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации")
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or @postService.isPostOwner(#postDto.id, authentication.principal.id)")
     @PutMapping
     public ResponseEntity<Void> update(@Valid @RequestBody PostDto postDto, MultipartFile[] multipartFiles) {
         if (postService.update(postDto, multipartFiles)) {
@@ -81,6 +85,7 @@ public class PostController {
             @ApiResponse(responseCode = "204", description = "Пост успешно удалён"),
             @ApiResponse(responseCode = "404", description = "Пост не найден")
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or @postService.isPostOwner(#postDto.id, authentication.principal.id)")
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deleteById(@PathVariable("postId") @Min(1) Long postId) {
         if (postService.deleteById(postId)) {

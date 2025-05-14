@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.User;
@@ -30,6 +31,7 @@ public class UsersController {
             @ApiResponse(responseCode = "200", description = "Успешно получен список всех пользователей",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class))))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<User> getAll() {
@@ -42,6 +44,7 @@ public class UsersController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserWithPostsDto.class)))),
             @ApiResponse(responseCode = "404", description = "Пользователи не найдены")
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/with-posts")
     public ResponseEntity<List<UserWithPostsDto>> getUsersWithPostsByUserIds(@RequestParam(name = "ids")
                                                                              @Parameter(

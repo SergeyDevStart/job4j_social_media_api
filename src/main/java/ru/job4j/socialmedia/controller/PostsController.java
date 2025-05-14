@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.socialmedia.dto.UserWithPostsDto;
 import ru.job4j.socialmedia.model.Post;
@@ -32,6 +33,7 @@ public class PostsController {
             @ApiResponse(responseCode = "200", description = "Успешно получен список всех постов",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Post.class))))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Post> getAll() {

@@ -19,3 +19,8 @@ springdoc:
   swagger-ui:
     tryItOutEnabled: true
 
+jwt:
+  token:
+    secret: easehjkopyJhbGciOiJIUzI1NiJ9eyJzdWIiOiJzdHVkZW50X2pvYjRqIiwiaWF0Ijox
+    expired: 3600000
+

@@ -24,11 +24,6 @@ public class PersonService {
     private final RoleRepository roleRepository;
 
     public RegisterDTO signUp(SignupRequestDTO signupRequest) {
-        if (Boolean.TRUE.equals(personRepository.existsByUsername(signupRequest.getUsername()))
-        || Boolean.TRUE.equals(personRepository.existsByEmail(signupRequest.getEmail()))) {
-            return new RegisterDTO(HttpStatus.BAD_REQUEST, "Error: Username or Email is already taken!");
-        }
-
         Person person = new Person(signupRequest.getUsername(), signupRequest.getEmail(),
                 encoder.encode(signupRequest.getPassword()));
 

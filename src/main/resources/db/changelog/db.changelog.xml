@@ -18,5 +18,8 @@
     <include file="db/scripts/011_ddl_create_table_roles.sql"/>
     <include file="db/scripts/012_ddl_create_table_persons_roles.sql"/>
     <include file="db/scripts/013_dml_insert_role.sql"/>
+    <include file="db/scripts/014_ddl_drop_table_persons.sql"/>
+    <include file="db/scripts/015_ddl_drop_table_persons_roles.sql"/>
+    <include file="db/scripts/016_ddl_create_table_users_roles.sql"/>
 
 </databaseChangeLog>

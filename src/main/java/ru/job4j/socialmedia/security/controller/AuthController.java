@@ -15,7 +15,7 @@ import ru.job4j.socialmedia.security.dtos.response.JwtResponseDTO;
 import ru.job4j.socialmedia.security.dtos.response.MessageResponseDTO;
 import ru.job4j.socialmedia.security.dtos.response.RegisterDTO;
 import ru.job4j.socialmedia.security.jwt.JwtUtils;
-import ru.job4j.socialmedia.security.service.PersonService;
+import ru.job4j.socialmedia.security.service.SecurityUserService;
 import ru.job4j.socialmedia.security.userdetails.UserDetailsImpl;
 
 import java.util.List;
@@ -25,13 +25,13 @@ import java.util.List;
 @RequestMapping("/api/auth")
 @AllArgsConstructor
 public class AuthController {
-    private final PersonService personService;
+    private final SecurityUserService securityUserService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/signup")
     public ResponseEntity<MessageResponseDTO> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) {
-        RegisterDTO registerDTO = personService.signUp(signUpRequest);
+        RegisterDTO registerDTO = securityUserService.signUp(signUpRequest);
         return ResponseEntity.status(registerDTO.getStatus())
                 .body(new MessageResponseDTO(registerDTO.getMessage()));
     }
@@ -39,7 +39,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword()));
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getLogin(), loginRequestDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();

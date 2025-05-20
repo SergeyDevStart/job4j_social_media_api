@@ -28,9 +28,8 @@ public class UserDto {
 
     @NotBlank
     @Length(
-            min = 4,
-            max = 10,
-            message = "пароль должен быть от 3 до 10 символов"
+            min = 6,
+            message = "пароль должен содержать не менее 6 символов"
     )
     @Schema(description = "Пароль для регистрации", example = "password")
     private String password;

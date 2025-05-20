@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.job4j.socialmedia.security.model.Person;
+import ru.job4j.socialmedia.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,14 +33,14 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(Person person) {
-        List<GrantedAuthority> authorities = person.getRoles().stream()
+    public static UserDetailsImpl build(User user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(person.getId(),
-                person.getUsername(),
-                person.getEmail(),
-                person.getPassword(),
+        return new UserDetailsImpl(user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPassword(),
                 authorities);
     }
 

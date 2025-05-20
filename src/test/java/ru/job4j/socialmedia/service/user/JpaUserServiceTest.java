@@ -32,12 +32,12 @@ class JpaUserServiceTest {
         User userOne = new User();
         userOne.setName("nameOne");
         userOne.setEmail("emailOne@mail.ru");
-        userOne.setPassword("pass");
+        userOne.setPassword("password");
 
         User userTwo = new User();
         userTwo.setName("userTwo");
         userTwo.setEmail("emailTwo@mail.ru");
-        userTwo.setPassword("pass");
+        userTwo.setPassword("password");
 
         userRepository.save(userOne);
         userRepository.save(userTwo);

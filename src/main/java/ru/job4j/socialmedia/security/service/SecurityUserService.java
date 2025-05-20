@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.job4j.socialmedia.model.User;
+import ru.job4j.socialmedia.repository.UserRepository;
 import ru.job4j.socialmedia.security.dtos.request.SignupRequestDTO;
 import ru.job4j.socialmedia.security.dtos.response.RegisterDTO;
 import ru.job4j.socialmedia.security.model.ERole;
-import ru.job4j.socialmedia.security.model.Person;
 import ru.job4j.socialmedia.security.model.Role;
-import ru.job4j.socialmedia.security.repository.PersonRepository;
 import ru.job4j.socialmedia.security.repository.RoleRepository;
 
 import java.util.HashSet;
@@ -18,14 +18,16 @@ import java.util.function.Supplier;
 
 @Service
 @AllArgsConstructor
-public class PersonService {
+public class SecurityUserService {
     private PasswordEncoder encoder;
-    private final PersonRepository personRepository;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
     public RegisterDTO signUp(SignupRequestDTO signupRequest) {
-        Person person = new Person(signupRequest.getUsername(), signupRequest.getEmail(),
-                encoder.encode(signupRequest.getPassword()));
+        User user = new User();
+        user.setName(signupRequest.getUsername());
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(encoder.encode(signupRequest.getPassword()));
 
         Set<String> stringRoles = signupRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -43,8 +45,8 @@ public class PersonService {
             });
         }
 
-        person.setRoles(roles);
-        personRepository.save(person);
-        return new RegisterDTO(HttpStatus.OK, "Person registered successfully!");
+        user.setRoles(roles);
+        userRepository.save(user);
+        return new RegisterDTO(HttpStatus.OK, "User registered successfully!");
     }
 }

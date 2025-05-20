@@ -51,4 +51,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             )
             """)
     List<User> findAllFriendsById(@Param("id") Long id);
+
+    @Query("""
+            FROM User u
+            LEFT JOIN FETCH u.roles
+            WHERE u.email = :email
+            """)
+    Optional<User> findByEmail(@Param("email") String email);
 }

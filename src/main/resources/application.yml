@@ -24,3 +24,12 @@ jwt:
     secret: easehjkopyJhbGciOiJIUzI1NiJ9eyJzdWIiOiJzdHVkZW50X2pvYjRqIiwiaWF0Ijox
     expired: 3600000
 
+management:
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: health,info,beans
+  endpoint:
+    health:
+      show-details: always
